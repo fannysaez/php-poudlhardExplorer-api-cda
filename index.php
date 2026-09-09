@@ -2,9 +2,6 @@
 
 $urlApi = 'https://hp-api.onrender.com/api/characters';
 
-$contenuJson = file_get_contents($urlApi);
-$personnages = json_decode($contenuJson, true);
-
 $imagesMaisons = [
     'Gryffindor' => 'images/gryffindor.jpg',
     'Slytherin'  => 'images/slytherin.jpg',
@@ -12,11 +9,22 @@ $imagesMaisons = [
     'Hufflepuff' => 'images/hufflepuff.jpg',
 ];
 
-$personnagesAvecImage = array_filter($personnages, function ($personnage) {
-    return !empty($personnage['image']);
-});
+$contenuJson = @file_get_contents($urlApi);
 
-$nombrePersonnages = count($personnagesAvecImage);
+if ($contenuJson === false) {
+    $personnagesAvecImage = [];
+    $nombrePersonnages = 0;
+    $erreurApi = true;
+} else {
+    $personnages = json_decode($contenuJson, true);
+
+    $personnagesAvecImage = array_filter($personnages, function ($personnage) {
+        return !empty($personnage['image']);
+    });
+
+    $nombrePersonnages = count($personnagesAvecImage);
+    $erreurApi = false;
+}
 
 function calculerAge(?string $dateNaissanceTexte, ?int $anneeNaissance): ?int
 {
@@ -88,9 +96,19 @@ function calculerAge(?string $dateNaissanceTexte, ?int $anneeNaissance): ?int
 
     <h1 class="mb-2 text-center">Univers Harry Potter</h1>
 
-    <p class="text-muted text-center mb-4">
-        <?= $nombrePersonnages ?> personnage<?= $nombrePersonnages > 1 ? 's' : '' ?> affiché<?= $nombrePersonnages > 1 ? 's' : '' ?>
-    </p>
+    <?php if ($erreurApi) : ?>
+
+        <div class="alert alert-warning text-center">
+            Impossible de récupérer les données depuis l'API pour le moment.
+        </div>
+
+    <?php else : ?>
+
+        <p class="text-muted text-center mb-4">
+            <?= $nombrePersonnages ?> personnage<?= $nombrePersonnages > 1 ? 's' : '' ?> affiché<?= $nombrePersonnages > 1 ? 's' : '' ?>
+        </p>
+
+    <?php endif; ?>
 
     <div class="row g-4">
 
