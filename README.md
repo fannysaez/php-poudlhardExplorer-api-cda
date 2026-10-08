@@ -63,3 +63,6 @@ poudlardExplorer/
 - **Si l'API avait été indisponible** : la page affiche un message d'erreur
   clair à la place de la grille plutôt que de planter ou d'afficher une page
   blanche (voir la vérification du retour de `file_get_contents()`).
+
+  ---
+**Mise à jour le 08 Octobre 2026**
